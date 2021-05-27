@@ -1,4 +1,3 @@
-env=$1
 // First time or if: "Error on oz deployment" during 7_deploy_bridge_v0.js deployment
 then run `truffle comiple --all ` and then execute
 
