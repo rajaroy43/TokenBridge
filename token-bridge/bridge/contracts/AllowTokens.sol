@@ -14,9 +14,6 @@ contract AllowTokens is IAllowTokens, Ownable {
     uint256 private maxTokensAllowed;
     uint256 private minTokensAllowed;
     uint256 public dailyLimit;
-
-// Bridge v3 upgrade variables
-// minimum amount allowed per token
     mapping (address => uint) public minAllowedToken;
 // constant fee per token
     mapping (address => uint) public feeConstToken;
@@ -27,8 +24,6 @@ contract AllowTokens is IAllowTokens, Ownable {
     event MaxTokensAllowedChanged(uint256 _maxTokens);
     event MinTokensAllowedChanged(uint256 _minTokens);
     event DailyLimitChanged(uint256 dailyLimit);
-
-// Bridge v3 upgrade events
     event FeeAndMinPerTokenChanged(address _token, uint256 _feeConst, uint256 _minAmount);
 
     modifier notNull(address _address) {
@@ -133,7 +128,6 @@ contract AllowTokens is IAllowTokens, Ownable {
         return maxWithrow;
     }
 
-// Bridge v3 upgrade functions
     function getMinPerToken(address token) external view returns(uint256) {
         return minAllowedToken[token];
     }
@@ -142,18 +136,6 @@ contract AllowTokens is IAllowTokens, Ownable {
         return feeConstToken[token];
     }
 
-   //function setMinPerToken(address token, uint256 minAmount) external onlyOwner {
-   //     require(minAmount <= maxTokensAllowed, "AllowTokens: Min Tokens should be equal or smaller than Max Tokens");
-   //     require(minAmount >= feeConstToken[token], "AllowTokens: Min Tokens should be equal bigger than fee");
-   //     minAllowedToken[token] = minAmount;
-   //    emit MinPerTokenChanged(token, minAmount);
-   // }
-
-    //function setFeePerToken(address token, uint256 feeConst) external onlyOwner {
-    //    require(feeConst >= minAllowedToken[token], "AllowTokens: Fee per Token should be equal or bigger than Min allowed");
-    //    feeConstToken[token] = feeConst;
-    //    emit FeePerTokenChanged(token, feeConst);
-    //}
 
     function setFeeAndMinPerToken(address token, uint256 _feeConst, uint256 _minAmount) external onlyOwner {
         require(_minAmount <= maxTokensAllowed, "AllowTokens: Min Tokens should be equal or smaller than Max Tokens");

@@ -49,24 +49,18 @@ contract Bridge is
     mapping(bytes32 => bool) public processed; // ProcessedHash => true
     IAllowTokens public allowTokens;
     ISideTokenFactory public sideTokenFactory;
-    //Bridge_v1 variables
-    bool public isUpgrading;
-    uint256 public constant feePercentageDivider = 10000; // Porcentage with up to 2 decimals
-    bool private alreadyRun;
-    //Bridge_v3 variables
+   
     bool public initialPrefixSetup;
     bool public isSuffix;
     bool private ethFirstTransfer;
     uint256 public ethFeeCollected;
     address private WETHAddr;
     string private nativeTokenSymbol;
-    //address public aggregatorAddr;
 
     event FederationChanged(address _newFederation);
     event SideTokenFactoryChanged(address _newSideTokenFactory);
-    event Upgrading(bool isUpgrading);
 
-    //event AllowTokenChanged(address _newAllowToken);
+    event AllowTokenChanged(address _newAllowToken);
     //event PrefixUpdated(bool _isSuffix, string _prefix);
 
     // We are not using this initializer anymore because we are upgrading.
@@ -96,10 +90,6 @@ contract Bridge is
         _;
     }
 
-    modifier whenNotUpgrading() {
-        require(!isUpgrading, "Bridge: Upgrading");
-        _;
-    }
 
     function acceptTransfer(
         address tokenAddress,
@@ -326,7 +316,7 @@ contract Bridge is
         uint256 amount,
         address receiver,
         bytes memory extraData
-    ) private whenNotUpgrading whenNotPaused nonReentrant returns (bool) {
+    ) private  whenNotPaused nonReentrant returns (bool) {
         require(tokenToUse != WETHAddr, "Bridge: Cannot transfer WETH");
         //Transfer the tokens on IERC20, they should be already Approved for the bridge Address to use them
         IERC20(tokenToUse).safeTransferFrom(
@@ -349,7 +339,7 @@ contract Bridge is
         uint256 amount,
         bytes calldata userData,
         bytes calldata
-    ) external whenNotPaused whenNotUpgrading {
+    ) external whenNotPaused  {
         //Hook from ERC777address
         if (operator == address(this)) return; // Avoid loop from bridge calling to ERC77transferFrom
         require(to == address(this), "Bridge: Not to address");
@@ -562,20 +552,12 @@ contract Bridge is
         emit SideTokenFactoryChanged(newSideTokenFactory);
     }
 
-    function startUpgrade() external onlyOwner {
-        isUpgrading = true;
-        emit Upgrading(isUpgrading);
-    }
-
-    function endUpgrade() external onlyOwner {
-        isUpgrading = false;
-        emit Upgrading(isUpgrading);
-    }
 
     //// Bridge v3 upgrade functions
     function receiveEthAt(address _receiver, bytes calldata _extraData)
         external
         payable
+        whenNotPaused
     {
         require(
             msg.value > 0 &&
@@ -625,7 +607,7 @@ contract Bridge is
             "Bridge: newAllowTokens is empty"
         );
         allowTokens = IAllowTokens(newAllowTokens);
-        //emit AllowTokenChanged(newAllowTokens);
+        emit AllowTokenChanged(newAllowTokens);
     }
 
     function initialSymbolPrefixSetup(bool _isSuffix, string calldata _prefix)
