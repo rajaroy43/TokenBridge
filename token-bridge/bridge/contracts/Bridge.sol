@@ -38,7 +38,6 @@ contract Bridge is
         IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
 
     address private federation;
-    uint256 private feePercentage;
     string public symbolPrefix;
     uint256 public lastDay;
     uint256 public spentToday;
@@ -64,25 +63,25 @@ contract Bridge is
     //event PrefixUpdated(bool _isSuffix, string _prefix);
 
     // We are not using this initializer anymore because we are upgrading.
-    //    function initialize(
-    //        address _manager,
-    //        address _federation,
-    //        address _allowTokens,
-    //        address _sideTokenFactory,
-    //        string memory _symbolPrefix
-    //    ) public initializer {
-    //        UpgradableOwnable.initialize(_manager);
-    //        UpgradablePausable.initialize(_manager);
-    //        symbolPrefix = _symbolPrefix;
-    //        allowTokens = AllowTokens(_allowTokens);
-    //        _changeSideTokenFactory(_sideTokenFactory);
-    //        _changeFederation(_federation);
-    //        //keccak256("ERC777TokensRecipient")
-    //        erc1820.setInterfaceImplementer(address(this), 0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b, address(this));
-    //    }
+        function initialize(
+            address _manager,
+            address _federation,
+            address _allowTokens,
+            address _sideTokenFactory,
+            string memory _symbolPrefix
+        ) public initializer {
+            UpgradableOwnable.initialize(_manager);
+            UpgradablePausable.initialize(_manager);
+            symbolPrefix = _symbolPrefix;
+            allowTokens = AllowTokens(_allowTokens);
+            _changeSideTokenFactory(_sideTokenFactory);
+            _changeFederation(_federation);
+            //keccak256("ERC777TokensRecipient")
+            erc1820.setInterfaceImplementer(address(this), 0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b, address(this));
+        }
 
     function version() external pure returns (string memory) {
-        return "v3";
+        return "v0";
     }
 
     modifier onlyFederation() {
@@ -339,7 +338,7 @@ contract Bridge is
         uint256 amount,
         bytes calldata userData,
         bytes calldata
-    ) external whenNotPaused  {
+    ) external whenNotPaused nonReentrant  {
         //Hook from ERC777address
         if (operator == address(this)) return; // Avoid loop from bridge calling to ERC77transferFrom
         require(to == address(this), "Bridge: Not to address");
@@ -498,15 +497,7 @@ contract Bridge is
         processed[compiledId] = true;
     }
 
-    // function setFeePercentage(uint amount) external onlyOwner whenNotPaused {
-    //     require(amount < (feePercentageDivider/10), "Bridge: bigger than 10%");
-    //     feePercentage = amount;
-    //     emit FeePercentageChanged(feePercentage);
-    // }
 
-    // function getFeePercentage() external view returns(uint) {
-    //     return feePercentage;
-    // }
 
     function calcMaxWithdraw() external view returns (uint256) {
         uint256 spent = spentToday;
@@ -558,6 +549,7 @@ contract Bridge is
         external
         payable
         whenNotPaused
+        nonReentrant
     {
         require(
             msg.value > 0 &&
@@ -607,7 +599,7 @@ contract Bridge is
             "Bridge: newAllowTokens is empty"
         );
         allowTokens = IAllowTokens(newAllowTokens);
-        emit AllowTokenChanged(newAllowTokens);
+        //emit AllowTokenChanged(newAllowTokens);
     }
 
     function initialSymbolPrefixSetup(bool _isSuffix, string calldata _prefix)
