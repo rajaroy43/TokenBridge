@@ -73,7 +73,7 @@ contract Bridge is
             UpgradableOwnable.initialize(_manager);
             UpgradablePausable.initialize(_manager);
             symbolPrefix = _symbolPrefix;
-            allowTokens = AllowTokens(_allowTokens);
+            allowTokens = IAllowTokens(_allowTokens);
             _changeSideTokenFactory(_sideTokenFactory);
             _changeFederation(_federation);
             //keccak256("ERC777TokensRecipient")
