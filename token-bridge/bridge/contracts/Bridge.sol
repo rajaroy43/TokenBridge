@@ -452,7 +452,7 @@ contract Bridge is
                 spentToday,
                 isASideToken
             ),
-            "Bridge: Validation limit increase/decrease or Tokens fee doesn't set or token fee=0"
+            "Bridge: Validation limit Fail or token fee=0"
         );
         spentToday = spentToday.add(amount);
     }
