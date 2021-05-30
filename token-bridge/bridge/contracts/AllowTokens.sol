@@ -14,9 +14,9 @@ contract AllowTokens is IAllowTokens, Ownable {
     uint256 private maxTokensAllowed;
     uint256 private minTokensAllowed;
     uint256 public dailyLimit;
-    mapping (address => uint) public minAllowedToken;
+    mapping (address => uint) private minAllowedToken;
 // constant fee per token
-    mapping (address => uint) public feeConstToken;
+    mapping (address => uint) private feeConstToken;
 
     event AllowedTokenAdded(address indexed _tokenAddress);
     event AllowedTokenRemoved(address indexed _tokenAddress);

@@ -262,7 +262,6 @@ contract Bridge is
         //As side tokens are ERC777 we need to convert granularity to decimals
         (uint8 calculatedDecimals, uint256 formattedAmount) =
             Utils.calculateDecimalsAndAmount(tokenAddress, granularity, amount);
-        //// Bridge v3 upgrade functions
         if (tokenAddress == WETHAddr) {
             address payable payableReceiver = address(uint160(receiver));
             payableReceiver.transfer(amount);
@@ -355,7 +354,6 @@ contract Bridge is
         bytes memory userData
     ) private {
         bool isASideToken = originalTokens[tokenToUse] != NULL_ADDRESS;
-        //V3 upgrade change global token fee to per token fee
         uint256 fee = allowTokens.getFeePerToken(tokenToUse);
         if (fee > 0) {
             if (tokenToUse == WETHAddr) {
@@ -454,7 +452,7 @@ contract Bridge is
                 spentToday,
                 isASideToken
             ),
-            "Bridge: Bigger than limit"
+            "Bridge: Validation limit increase/decrease or Tokens fee doesn't set or token fee=0"
         );
         spentToday = spentToday.add(amount);
     }
@@ -543,8 +541,6 @@ contract Bridge is
         emit SideTokenFactoryChanged(newSideTokenFactory);
     }
 
-
-    //// Bridge v3 upgrade functions
     function receiveEthAt(address _receiver, bytes calldata _extraData)
         external
         payable
