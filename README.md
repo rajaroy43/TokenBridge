@@ -16,7 +16,7 @@ Truffle artifacts (the JSON files in build/contracts) contain the AST (abstract 
 
 Truffle sometimes partially recompiles only the contracts that have changed. We will ask you to trigger a full recompilation either using truffle compile --all or deleting the build/contracts directory when this happens. The technical reason is that since Solidity does not produce deterministic ASTs, the plugins are unable to resolve references correctly if they are not from the same compiler run.
 
-`Transferring Funds Through the bridge -`
+## Transferring Funds Through the bridge -
 
 1.  Setting WEth for transferring eth through the bridge - :
     NETWORK_NAME =Network where your contract is deploying/deployed and you are interacting to deployed contract
