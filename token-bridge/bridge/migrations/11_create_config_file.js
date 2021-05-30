@@ -31,9 +31,12 @@ module.exports = function(deployer, networkName, accounts) {
     if (shouldDeployToken(networkName)) {
       const mainToken = await MainToken.deployed();
       config.testToken = mainToken.address.toLowerCase();
-      let data = allowTokens.contract.methods.addAllowedToken(mainToken.address).encodeABI();
-      await multiSig.submitTransaction(allowTokens.address, 0, data);
-
+      let addAllowedTokendata = allowTokens.contract.methods.addAllowedToken(mainToken.address).encodeABI();
+      await multiSig.submitTransaction(allowTokens.address, 0, addAllowedTokendata);
+      const minAmount = web3.utils.toWei("0.000001"); //Min_Amount =0.000001 eth
+      const feeConst = web3.utils.toWei("0.000000001"); //fee=0.000000001 eth
+      let setFeeAndMinPerTokenData = allowTokens.contract.methods.setFeeAndMinPerToken(mainToken.address, feeConst, minAmount).encodeABI();
+      await multiSig.submitTransaction(allowTokens.address, 0, setFeeAndMinPerTokenData);
       // Uncomment below lines to use multiple federators
       // await multiSig.confirmTransaction(0, { from: accounts[1] });
       // await multiSig.confirmTransaction(0, { from: accounts[2] });

@@ -3,7 +3,7 @@ const MultiSigWallet = artifacts.require("MultiSigWallet");
 const Federation = artifacts.require("Federation");
 const AllowTokens = artifacts.require("AllowTokens");
 const SideTokenFactory = artifacts.require("SideTokenFactory");
-const Bridge_v0 = artifacts.require("Bridge");
+const Bridge = artifacts.require("Bridge");
 
 //example https://github.com/OpenZeppelin/openzeppelin-sdk/tree/master/examples/truffle-migrate/migrations
 async function ozDeploy(options, name, alias, initArgs) {
@@ -43,15 +43,15 @@ module.exports = function(deployer, networkName, accounts) {
     if (networkName === "soliditycoverage") {
       //soldity coverage doesn't play along with oppen zeppelin sdk
       //so we deploy the un initialized contract just to create the objects
-      return deployer.deploy(Bridge_v0);
+      return deployer.deploy(Bridge);
     }
 
     try {
       //running truffle test re runs migrations and OZ exploits if aleready upgraded the contract, check if we already have run a migration
-      await Bridge_v0.deployed();
+      await Bridge.deployed();
     } catch (err) {
       //If we haven't deployed it then re deploy.
-      await ozDeploy({ network, txParams }, "Bridge_v0", "Bridge_v0", initArgs);
+      await ozDeploy({ network, txParams }, "Bridge", "Bridge", initArgs);
 
       //Set the multisig as the Owner of the ProxyAdmin
       await scripts.setAdmin({ newAdmin: multiSig.address, network: network, txParams: txParams });
