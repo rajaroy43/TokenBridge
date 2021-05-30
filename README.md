@@ -1,8 +1,6 @@
-Make sure are in ./token-bridge/bride/ directory
+Make sure are in `./token-bridge/bride` directory
 
-## For Checking all contract size run -
-
-`node .\calculateSize.js`
+For Checking all contract size run - `node .\calculateSize.js`
 
 First time or if: "Error on oz deployment" during 7_deploy_bridge.js deployment
 then run `truffle comiple --all ` and then execute
