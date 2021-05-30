@@ -1,6 +1,6 @@
 Make sure are in ./token-bridge/bride/ directory
 
-# For Checking all contract size run -
+## For Checking all contract size run -
 
 `node .\calculateSize.js`
 
@@ -30,16 +30,16 @@ Truffle sometimes partially recompiles only the contracts that have changed. We 
 
 2.  Setting TestTokens for transferring tokens through the bridge :
 
-            a. ` truffle exec .\scripts\test\deploySovrynTestTokens.js --network  NETWORK_NAME `
-            b.Allowing test token for moving through the bridge - ` truffle exec .\scripts\allowToken.js --network
-               NETWORK_NAME  Test_Token_Address `
-            c. Setting Fee and minimum allowed per token - ` truffle exec .\scripts\setFeeAndMinPerToken.js  --network  NETWORK_NAME  Test_Token_Address  FEE(in eth)  minAmount (in eth) `
+            a. truffle exec .\scripts\test\deploySovrynTestTokens.js --network  NETWORK_NAME
+            b.Allowing test token for moving through the bridge - truffle exec .\scripts\allowToken.js --network
+               NETWORK_NAME  Test_Token_Address
+            c. Setting Fee and minimum allowed per token -  truffle exec .\scripts\setFeeAndMinPerToken.js  --network  NETWORK_NAME  Test_Token_Address  FEE(in eth)  minAmount (in eth) `
 
 3.  Withdrawing fee to specific User :
 
-`truffle exec .\scripts\withDrawFees.js --network NETWORK_NAME RECEIVER_ADDRESS`
+            truffle exec .\scripts\withDrawFees.js --network NETWORK_NAME RECEIVER_ADDRESS
 
 4.  Pausing/Unpausing Bridge functionality :
 
-    a) For pausing : `truffle exec .\scripts\pauseORunpause.js --network NETWORK_NAME pause`
-    b) For Unpausing : `truffle exec .\scripts\pauseORunpause.js --network NETWORK_NAME unpause`
+            a) For pausing : truffle exec .\scripts\pauseORunpause.js --network NETWORK_NAME pause
+            b) For Unpausing :truffle exec .\scripts\pauseORunpause.js --network NETWORK_NAME unpause
