@@ -6,13 +6,13 @@
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
     "start": "npm run lint && npm run migrate && npm run test",
-    "+": "npx solium -d contracts/",
+    "lint": "npx solium -d contracts/",
     "migrate": "rm -rf ./build && rm -f ./.openzeppelin/dev-5777.json && npm run prepare && npx truffle migrate --reset",
     "test": "npx truffle test",
     "coverage": "npx truffle run coverage",
     "prepare": "npx truffle compile && node ./datagen.js",
     "ganache": "npx ganache-cli -i 5777 --allowUnlimitedContractSize --gasLimit=0x1fffffffffffff",
-    "deployIntegrationTest": "rm -f ./.openzeppelin/dev-5777.json && rm -f ./.openzeppelin/dev-33.json && rm -rf ./build && npx truffle migrate --reset --network rskregtest && npx truffle migrate --reset --network development"
+    "deployIntegrationTest": "rm -f ./.openzeppelin/dev-5777.json && rm -f ./.openzeppelin/dev-33.json && rm -rf ./build && npx truffle migrate --reset --network development2 && npx truffle migrate --reset --network development"
   },
   "keywords": [
     "rsk",
