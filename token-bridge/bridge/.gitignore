@@ -9,3 +9,8 @@ coverage/
 coverage.json
 .coverage_contracts
 .coverage_artifacts
+
+.openzeppelin\.session
+migrations_V0/
+contracts_V0/
+scripts_V0/

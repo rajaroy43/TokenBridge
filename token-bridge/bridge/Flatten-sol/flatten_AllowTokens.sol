@@ -265,13 +265,25 @@ contract Ownable is Context {
     }
 }
 
-// File: contracts/AllowTokens.sol
+// File: contracts/IAllowTokens.sol
+
+pragma solidity ^0.5.0;
+
+interface IAllowTokens {
+
+    function getFeePerToken(address token) external view returns(uint256); 
+    function isValidTokenTransfer(address tokenToUse, uint amount, uint spentToday, bool isSideToken) external view returns (bool);
+    function calcMaxWithdraw(uint spentToday) external view returns (uint);
+}
+
+// File: contracts/Briidge.sol
 
 pragma solidity >=0.4.21 <0.6.0;
 
 
 
-contract AllowTokens is Ownable {
+
+contract AllowTokens is IAllowTokens, Ownable {
     using SafeMath for uint256;
 
     address constant private NULL_ADDRESS = address(0);
@@ -281,6 +293,9 @@ contract AllowTokens is Ownable {
     uint256 private maxTokensAllowed;
     uint256 private minTokensAllowed;
     uint256 public dailyLimit;
+    mapping (address => uint) private minAllowedToken;
+// constant fee per token
+    mapping (address => uint) private feeConstToken;
 
     event AllowedTokenAdded(address indexed _tokenAddress);
     event AllowedTokenRemoved(address indexed _tokenAddress);
@@ -288,6 +303,7 @@ contract AllowTokens is Ownable {
     event MaxTokensAllowedChanged(uint256 _maxTokens);
     event MinTokensAllowedChanged(uint256 _minTokens);
     event DailyLimitChanged(uint256 dailyLimit);
+    event FeeAndMinPerTokenChanged(address _token, uint256 _feeConst, uint256 _minAmount);
 
     modifier notNull(address _address) {
         require(_address != NULL_ADDRESS, "AllowTokens: Address cannot be empty");
@@ -297,9 +313,9 @@ contract AllowTokens is Ownable {
     constructor(address _manager) public  {
         transferOwnership(_manager);
         validateAllowedTokens = true;
-        maxTokensAllowed = 10000 ether;
+        maxTokensAllowed = 100000 ether;
         minTokensAllowed = 1 ether;
-        dailyLimit = 100000 ether;
+        dailyLimit = 1000000 ether;
     }
 
     function isValidatingAllowedTokens() external view returns(bool) {
@@ -371,11 +387,13 @@ contract AllowTokens is Ownable {
     function isValidTokenTransfer(address tokenToUse, uint amount, uint spentToday, bool isSideToken) external view returns (bool) {
         if(amount > maxTokensAllowed)
             return false;
-        if(amount < minTokensAllowed)
+        if(amount < minAllowedToken[tokenToUse])
             return false;
         if (spentToday + amount > dailyLimit || spentToday + amount < spentToday)
-            return false;
+           return false;
         if(!isSideToken && !isTokenAllowed(tokenToUse))
+            return false;
+        if(feeConstToken[tokenToUse] == 0 )
             return false;
         return true;
     }
@@ -387,6 +405,24 @@ contract AllowTokens is Ownable {
         if(maxWithrow > maxTokensAllowed)
             maxWithrow = maxTokensAllowed;
         return maxWithrow;
+    }
+
+    function getMinPerToken(address token) external view returns(uint256) {
+        return minAllowedToken[token];
+    }
+
+    function getFeePerToken(address token) public view returns(uint256) {
+        return feeConstToken[token];
+    }
+
+
+    function setFeeAndMinPerToken(address token, uint256 _feeConst, uint256 _minAmount) external onlyOwner {
+        require(_minAmount <= maxTokensAllowed, "AllowTokens: Min Tokens should be equal or smaller than Max Tokens");
+        require(_minAmount >= _feeConst, "AllowTokens: Min Tokens should be equal bigger than fee");
+        require(_feeConst > 0, "AllowTokens: Fee Should be> 0");
+        feeConstToken[token] = _feeConst;
+        minAllowedToken[token] = _minAmount;
+        emit FeeAndMinPerTokenChanged(token, _feeConst, _minAmount);
     }
 
 }
