@@ -1,3 +1,10 @@
+### Flurry Bridge
+
+1. git clone -b master https://github.com/minizbie/flurry-token-bridge.git
+2. Deploy bridge:
+   cd token-bridge/bridge/
+   npm install
+
 Make sure are in `./token-bridge/bride` directory
 
 For Checking all contract size run - `node .\calculateSize.js`
