@@ -55,6 +55,7 @@ contract Bridge is
     uint256 public ethFeeCollected;
     address private WETHAddr;
     string private nativeTokenSymbol;
+    bytes32 constant private _erc777Interface = keccak256("ERC777Token");
 
     event FederationChanged(address _newFederation);
     event SideTokenFactoryChanged(address _newSideTokenFactory);
@@ -74,8 +75,8 @@ contract Bridge is
             UpgradablePausable.initialize(_manager);
             symbolPrefix = _symbolPrefix;
             allowTokens = IAllowTokens(_allowTokens);
-            _changeSideTokenFactory(_sideTokenFactory);
-            _changeFederation(_federation);
+            sideTokenFactory = ISideTokenFactory(_sideTokenFactory);
+            federation = _federation;
             //keccak256("ERC777TokensRecipient")
             erc1820.setInterfaceImplementer(address(this), 0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b, address(this));
         }
@@ -218,7 +219,7 @@ contract Bridge is
         } else {
             require(
                 calculatedGranularity == sideToken.granularity(),
-                "Bridge: Granularity differ from side token"
+                "Bridge: Granularity differ "
             );
         }
         sideToken.mint(receiver, formattedAmount, userData, "");
@@ -258,7 +259,7 @@ contract Bridge is
         uint256 granularity,
         uint256 amount
     ) private {
-        require(decimals == 18, "Bridge: Invalid decimals cross back");
+        require(decimals == 18, "Bridge: Invalid decimals");
         //As side tokens are ERC777 we need to convert granularity to decimals
         (uint8 calculatedDecimals, uint256 formattedAmount) =
             Utils.calculateDecimalsAndAmount(tokenAddress, granularity, amount);
@@ -343,6 +344,9 @@ contract Bridge is
         require(to == address(this), "Bridge: Not to address");
         address tokenToUse = _msgSender();
         require(tokenToUse != WETHAddr, "Bridge: Cannot transfer WETH");
+        require(erc1820.getInterfaceImplementer(tokenToUse, _erc777Interface) != NULL_ADDRESS, "Bridge: Not ERC777 token");
+        require(userData.length != 0 || !from.isContract(), "Bridge: Specify receiver address in data");
+
         //This can only be used with trusted contracts
         crossTokens(tokenToUse, from, amount, userData);
     }
