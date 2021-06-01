@@ -33,12 +33,17 @@ module.exports = {
     development: {
       host: "127.0.0.1",
       port: 8545,
-      network_id: "*" // Match any network id
+      network_id: "5777",
+      gas: 6721975,
+      gasPrice: 200000000,
     },
-    rskregtest: {
+    //2nd ganache blockchain
+    development2: {
       host: "127.0.0.1",
       port: 4444,
-      network_id: "*" // Match any network id
+      network_id: "33",
+      gas: 6300000,
+      gasPrice: 60000000, // 0.06 gwei
     },
   }
 };
