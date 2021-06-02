@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "contracts": {
     "Bridge": "Bridge",
-    "Bridge_v0": "Bridge_v0"
+    "Bridge_v0": "Bridge"
   },
   "dependencies": {},
   "compiler": {
