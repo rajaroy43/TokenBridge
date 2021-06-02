@@ -276,7 +276,7 @@ interface IAllowTokens {
     function calcMaxWithdraw(uint spentToday) external view returns (uint);
 }
 
-// File: contracts/Briidge.sol
+// File: contracts/Bridge.sol
 
 pragma solidity >=0.4.21 <0.6.0;
 
