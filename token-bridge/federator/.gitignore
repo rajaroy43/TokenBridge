@@ -1,0 +1,12 @@
+config/config.js
+rskregtest.json
+development.json
+test.json
+latestBlock.txt
+db
+config/federator.key
+config/telegram.key
+federator.log
+test/lib/*.txt
+coverage
+manuallyCheck.txt
