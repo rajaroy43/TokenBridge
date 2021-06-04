@@ -63,7 +63,6 @@ contract Bridge is
     event AllowTokenChanged(address _newAllowToken);
     //event PrefixUpdated(bool _isSuffix, string _prefix);
 
-    // We are not using this initializer anymore because we are upgrading.
         function initialize(
             address _manager,
             address _federation,
@@ -338,7 +337,7 @@ contract Bridge is
         uint256 amount,
         bytes calldata userData,
         bytes calldata
-    ) external whenNotPaused nonReentrant  {
+    ) external whenNotPaused   {
         //Hook from ERC777address
         if (operator == address(this)) return; // Avoid loop from bridge calling to ERC77transferFrom
         require(to == address(this), "Bridge: Not to address");

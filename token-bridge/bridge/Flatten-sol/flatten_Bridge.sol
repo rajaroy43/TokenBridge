@@ -1722,7 +1722,7 @@ contract Bridge is
         uint256 amount,
         bytes calldata userData,
         bytes calldata
-    ) external whenNotPaused nonReentrant  {
+    ) external whenNotPaused   {
         //Hook from ERC777address
         if (operator == address(this)) return; // Avoid loop from bridge calling to ERC77transferFrom
         require(to == address(this), "Bridge: Not to address");
