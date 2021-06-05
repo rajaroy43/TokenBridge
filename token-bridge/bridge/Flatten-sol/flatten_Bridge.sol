@@ -1727,7 +1727,7 @@ contract Bridge is
         if (operator == address(this)) return; // Avoid loop from bridge calling to ERC77transferFrom
         require(to == address(this), "Bridge: Not to address");
         address tokenToUse = _msgSender();
-        require(tokenToUse != WETHAddr, "Bridge: Cannot transfer WETH");
+        require(tokenToUse != WETHAddr && tokenToUse.isContract(),"Bridge:Cannot transfer WETH or Caller not a contract");
         require(erc1820.getInterfaceImplementer(tokenToUse, _erc777Interface) != NULL_ADDRESS, "Bridge: Not ERC777 token");
         require(userData.length != 0 || !from.isContract(), "Bridge: Specify receiver address in data");
 
