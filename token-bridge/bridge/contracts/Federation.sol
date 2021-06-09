@@ -182,7 +182,7 @@ contract Federation is Ownable {
         require(members.length > 1, "Federation: Can't remove all the members");
         require(members.length - 1 >= required, "Federation: Can't have less than required members");
 
-        isMember[_oldMember] = false;
+        isMember[_oldMember] =  false;
         for (uint i = 0; i < members.length - 1; i++) {
             if (members[i] == _oldMember) {
                 members[i] = members[members.length - 1];
