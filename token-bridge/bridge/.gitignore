@@ -14,3 +14,4 @@ coverage.json
 migrations_V0/
 contracts_V0/
 scripts_V0/
+test/Bridge_Integeration.js
