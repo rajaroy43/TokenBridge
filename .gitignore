@@ -1,7 +1,11 @@
 # VsCode
 ## history plugin
 .history
+.gitlab/
 /.idea/
+ops/
+bridgeKey/
+aws-deployment
 aws-deployment/environments/federator/.terraform
 aws-deployment/environments/federator/terraform.tfstate
 aws-deployment/environments/federator/terraform.tfstate.backup
