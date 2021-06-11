@@ -1,7 +1,0 @@
-{
-  "authorized_keys": [
-    {
-      "key": "{{ lookup('file', './gitlabci.pub') }}"
-    }
-  ]
-}
