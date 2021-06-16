@@ -1,16 +1,18 @@
 # Token Bridge Contracts
 
 ## Install dependencies
+
 Don't use Node 14 as it has issues with truffle, use node 8, 10 or 12.
 Install node https://nodejs.org/es/
 Then install dependencies
+
 ```
 npm install
 ```
 
 ## Install and run ganache
-https://www.trufflesuite.com/ganache
 
+https://www.trufflesuite.com/ganache
 
 ## Running test
 
@@ -45,7 +47,7 @@ module.exports = {
       gas: 6300000,
       gasPrice: 60000000, // 0.06 gwei
     },
-  }
+  },
 };
 ```
 
@@ -58,21 +60,18 @@ ganache-cli --verbose
 ```
 
 Deploy using truffle to the desire network
+
 ```
 truffle migrate --network <network>
 ```
 
 Examples
+
 ```
 truffle migrate --network development
-truffle migrate --network rskregtest
+truffle migrate --network development2
 ```
 
+For local direct deploy on both chain (development and development2) run - `yarn deployIntegrationTest`
+
 This will also generate the json files for that network with the addresses of the deployed contracts that will be called by the federator.
-
-
-
-
-
-
-
