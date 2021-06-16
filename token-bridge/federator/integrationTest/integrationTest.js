@@ -121,7 +121,7 @@ async function transfer(originFederators, destinationFederators, config, origin,
     logger.info(`${origin} token addres ${originAddress} - User Address: ${userAddress}`);
 
     const initialUserBalance = await originWeb3.eth.getBalance(userAddress);
-    logger.debug("Initial user balance ", initialUserBalance);
+    logger.info("Initial user balance ", initialUserBalance);
 
     logger.debug("Aproving token transfer");
     data = originTokenContract.methods.transfer(userAddress, amount).encodeABI();
