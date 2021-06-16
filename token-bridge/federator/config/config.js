@@ -17,7 +17,7 @@ module.exports = {
   federatorInstanceId: "",
   telegramBot: {
     token: telegramToken,
-    groupId: 0, // Telegram group id to send the messages to
+    groupId: 1247432371, // Telegram group id to send the messages to
   },
   confirmationTable: {
     1: {

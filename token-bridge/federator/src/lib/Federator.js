@@ -237,9 +237,7 @@ module.exports = class Federator {
     let fromBlock;
     try {
       fromBlock = fs.readFileSync(this.lastBlockPath, "utf8");
-      console.log("from Block", fromBlock);
     } catch (err) {
-      console.log("In error");
       fromBlock = originalFromBlock;
     }
     if (fromBlock < originalFromBlock) {

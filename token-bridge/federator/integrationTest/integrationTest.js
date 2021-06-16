@@ -121,7 +121,7 @@ async function transfer(originFederators, destinationFederators, config, origin,
     logger.info(`${origin} token addres ${originAddress} - User Address: ${userAddress}`);
 
     const initialUserBalance = await originWeb3.eth.getBalance(userAddress);
-    logger.info("Initial user balance ", initialUserBalance);
+    logger.info("Initial user balance in wei ", initialUserBalance);
 
     logger.debug("Aproving token transfer");
     data = originTokenContract.methods.transfer(userAddress, amount).encodeABI();
@@ -175,8 +175,8 @@ async function transfer(originFederators, destinationFederators, config, origin,
     let bridgeBalanceBefore = await originTokenContract.methods.balanceOf(originBridgeAddress).call();
     let receiverBalanceBefore = await originTokenContract.methods.balanceOf(userAddress).call();
     let senderBalanceBefore = await destinationTokenContract.methods.balanceOf(userAddress).call();
-    logger.debug(
-      `bridge balance:${bridgeBalanceBefore}, receiver balance:${receiverBalanceBefore}, sender balance:${senderBalanceBefore} `
+    logger.info(
+      `BEFORE: bridge balance:${bridgeBalanceBefore}, receiver balance:${receiverBalanceBefore}, sender balance:${senderBalanceBefore} `
     );
     await destinationTransactionSender.sendTransaction(userAddress, "", 6000000, config.privateKey);
 

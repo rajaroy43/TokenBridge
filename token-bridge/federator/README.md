@@ -8,6 +8,18 @@ The federators will be the owners of the contracts willing to allow to cross the
 
 Go to /federator/config copy `config.sample.js` file and rename it to `config.js` set mainchain and sidechain to point to the json files of the networks you are suing, for example rsktestnet-kovan.json and kovan.json, `make sure to set the host parameter of those files`. Create the file `federator.key` inside the config folder, and add the private key of the member of the Federation contract. The members of the federation are controled by the MultiSig contract, same that is owner of the Bridge and AllowedTokens contracts.
 
+If you wan't to add a telegram bot :
+
+- First invite or search in your telegram `BotFather` and click on `start `
+- Create your Bot by sending message `/newbot`
+- Write your bot configuration and send message synchronously to BotFather
+- At the end you will get acess token ,copy this acess token and create file `telegram.key ` inside config folder and paste acess token in telegram.key
+- For getting groupId ,search in telegram `@RawDataBot `.click on start and get groupId there .
+- Now take this group id and paste inside `./config/config.js`
+  It will look like
+
+  `telegramBot: { token: telegramToken, groupId: 0, // Telegram group id to send the messages to },` in ./config.js
+
 ## Usage
 
 Run `npm install` to install the dependencies, make sure you followed the previous config step. Then to start the service run `npm start` which will start a single federator that listen to both networks. Check the logs to see that everything is working properly.
