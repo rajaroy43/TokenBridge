@@ -109,6 +109,7 @@ module.exports = class Federator {
   async _processLogs(ctr, logs) {
     try {
       const transactionSender = new TransactionSender(this.sideWeb3, this.logger, this.config);
+
       const from = await transactionSender.getAddress(this.config.privateKey);
       const currentBlock = await this._getCurrentBlockNumber();
 
@@ -118,7 +119,6 @@ module.exports = class Federator {
         this.logger.info("Processing event log:", log);
 
         const { _amount: amount, _symbol: symbol } = log.returnValues;
-
         if (this._isConfirmed(ctr, symbol, amount, currentBlock, log.blockNumber)) {
           await this._processLog(log, from);
         } else if (allLogsConfirmed) {
