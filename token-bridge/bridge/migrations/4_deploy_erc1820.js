@@ -1,6 +1,6 @@
 require("@openzeppelin/test-helpers/configure")({ provider: web3.currentProvider, environment: "truffle" });
 //const { singletons } = require('@openzeppelin/test-helpers');
-
+// await singletons.ERC1820Registry(accounts[0]);
 module.exports = function(deployer, networkName, accounts) {
   deployer.then(() => {
     if (networkName === "development" || networkName === "development2" || networkName === "soliditycoverage") {
