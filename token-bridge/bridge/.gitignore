@@ -5,6 +5,9 @@ build
 .openzeppelin/kovan.json
 .openzeppelin/mainnet.json
 .openzeppelin/ropsten.json
+.openzeppelin/rinkeby.json
+.openzeppelin/btestnet.json
+
 coverage/
 coverage.json
 .coverage_contracts
