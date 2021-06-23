@@ -233,7 +233,7 @@ contract Bridge is
                         userData
                     )
                 );
-            if (!success) {
+         if (!success) {
                 emit ErrorTokenReceiver(errorData);
             }
         }
@@ -620,7 +620,10 @@ contract Bridge is
     function setNativeTokenSymbol(string calldata _nativeTokenSymbol)
         external
         onlyOwner
-    {
+    {   
+        require(bytes(_nativeTokenSymbol).length>0,
+        "Bridge: NativeTokenSymbol is empty")
+        ;
         nativeTokenSymbol = _nativeTokenSymbol;
     }
 
