@@ -207,7 +207,7 @@ contract Federation is Ownable {
     }
     function setRevokeTransactionAndVote(bytes32 revokeTransactionID) external onlyOwner {
         require(processed[revokeTransactionID],"Federation: Tx id not processed");
-        require(revokeTransactionID != NULL_HASH, "Federation: _revokeTransactionID cannot be NULL");
+        require(revokeTransactionID != NULL_HASH, "Federation: revokeTransactionID cannot be NULL");
         processed[revokeTransactionID] = false;
         
         for (uint i = 0; i < members.length; i++) {
