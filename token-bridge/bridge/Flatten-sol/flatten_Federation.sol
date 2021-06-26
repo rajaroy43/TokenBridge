@@ -325,7 +325,7 @@ contract Ownable is Context {
     }
 }
 
-// File: contracts/Briidge.sol
+// File: contracts/Federation.sol
 
 pragma solidity ^0.5.0;
 
@@ -338,6 +338,7 @@ contract Federation is Ownable {
     IBridge public bridge;
     address[] public members;
     uint public required;
+    bytes32 constant private NULL_HASH = bytes32(0);
 
     mapping (address => bool) public isMember;
     mapping (bytes32 => mapping (address => bool)) public votes;
@@ -510,7 +511,7 @@ contract Federation is Ownable {
         require(members.length > 1, "Federation: Can't remove all the members");
         require(members.length - 1 >= required, "Federation: Can't have less than required members");
 
-        isMember[_oldMember] = false;
+        isMember[_oldMember] =  false;
         for (uint i = 0; i < members.length - 1; i++) {
             if (members[i] == _oldMember) {
                 members[i] = members[members.length - 1];
@@ -532,5 +533,13 @@ contract Federation is Ownable {
         required = _required;
         emit RequirementChange(_required);
     }
-
+    function setRevokeTransactionAndVote(bytes32 revokeTransactionID) external onlyOwner {
+        require(processed[revokeTransactionID],"Federation: Tx id not processed");
+        require(revokeTransactionID != NULL_HASH, "Federation: revokeTransactionID cannot be NULL");
+        processed[revokeTransactionID] = false;
+        
+        for (uint i = 0; i < members.length; i++) {
+            votes[revokeTransactionID][members[i]] = false;
+        }
+    }
 }
