@@ -1,6 +1,6 @@
-### Flurry Bridge
+### Token Bridge
 
-1. git clone -b master https://github.com/minizbie/flurry-token-bridge.git
+1. git clone https://github.com/rajaroy43/TokenBridge.git
 2. Deploy bridge:
    cd token-bridge/bridge/
 
