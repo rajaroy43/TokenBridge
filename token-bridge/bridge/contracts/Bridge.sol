@@ -11,6 +11,8 @@ import "./zeppelin/introspection/IERC1820Registry.sol";
 import "./zeppelin/token/ERC777/IERC777Recipient.sol";
 import "./zeppelin/token/ERC20/IERC20.sol";
 import "./zeppelin/token/ERC20/SafeERC20.sol";
+import "./zeppelin/token/ERC20/IERC20Mintable.sol";
+
 import "./zeppelin/utils/Address.sol";
 import "./zeppelin/math/SafeMath.sol";
 
@@ -46,6 +48,8 @@ contract Bridge is
     mapping(address => address) public originalTokens; // SideToken => OriginalToken
     mapping(address => bool) public knownTokens; // OriginalToken => true
     mapping(bytes32 => bool) public processed; // ProcessedHash => true
+    mapping(ISideToken =>bool)public deployedSideTokenManualy;//deployedSideTokenManualy=> true
+    mapping(address=>bool) public deployedKnownSideTokenManualy;//manaul deployed sidetoken for original token 
     IAllowTokens public allowTokens;
     ISideTokenFactory public sideTokenFactory;
    
@@ -221,6 +225,11 @@ contract Bridge is
                 "Bridge: Granularity differ "
             );
         }
+        if(deployedsideTokenManualy[sideToken]){
+            formattedAmount=amount
+            IERC20Mintable(sideToken).mint(receiver,formattedAmount);
+        }
+        else
         sideToken.mint(receiver, formattedAmount, userData, "");
 
         if (receiver.isContract()) {
@@ -245,7 +254,7 @@ contract Bridge is
             decimals,
             granularity,
             formattedAmount,
-            18,
+            sideToken.decimals(),
             calculatedGranularity,
             userData
         );
@@ -258,14 +267,17 @@ contract Bridge is
         uint256 granularity,
         uint256 amount
     ) private {
-        require(decimals == 18, "Bridge: Invalid decimals");
-        //As side tokens are ERC777 we need to convert granularity to decimals
         (uint8 calculatedDecimals, uint256 formattedAmount) =
             Utils.calculateDecimalsAndAmount(tokenAddress, granularity, amount);
         if (tokenAddress == WETHAddr) {
             address payable payableReceiver = address(uint160(receiver));
             payableReceiver.transfer(amount);
         } else {
+            if(deployedKnownSideTokenManualy[tokenAddress])
+                formattedAmount=amount;
+            else
+                require(decimals == 18, "Bridge: Invalid decimals");
+                //As side tokens are ERC777 we need to convert granularity to decimals
             IERC20(tokenAddress).safeTransfer(receiver, formattedAmount);
         }
         emit AcceptedCrossTransfer(
@@ -368,8 +380,11 @@ contract Bridge is
         }
         uint256 amountMinusFees = amount.sub(fee);
         if (isASideToken) {
-            verifyWithAllowTokens(tokenToUse, amount, isASideToken);
+            verifyWithAllowTokens(tokenToUse, Utils.decimalsToGranularity(ISideToken(tokenToUse).decimals())*amount, isASideToken);
             //Side Token Crossing
+            if(deployedSideTokenManualy[tokenToUse])
+            IERC20Mintable(tokenToUse).burn(address(this),amountMinusFees);
+            else
             ISideToken(tokenToUse).burn(amountMinusFees, userData);
             // solium-disable-next-line max-len
             emit Cross(
@@ -630,23 +645,37 @@ contract Bridge is
     function getNativeTokenSymbol() external view returns (string memory) {
         return nativeTokenSymbol;
     }
-
-    // Commented because it is unused for us and need decrease contract size
-    //This method is only to recreate the USDT and USDC tokens on rsk without granularity restrictions.
-    //    function clearSideToken() external onlyOwner returns(bool) {
-    //        require(!alreadyRun, "already done");
-    //        alreadyRun = true;
-    //        address payable[4] memory sideTokens = [
-    //            0xe506F698b31a66049BD4653ed934E7a07Cbc5549,
-    //            0x5a42221D7AaE8e185BC0054Bb036D9757eC18857,
-    //            0xcdc8ccBbFB6407c53118fE47259e8d00C81F42CD,
-    //            0x6117C9529F15c52e2d3188d5285C745B757b5825
-    //        ];
-    //        for (uint i = 0; i < sideTokens.length; i++) {
-    //            address originalToken = address(originalTokens[sideTokens[i]]);
-    //            originalTokens[sideTokens[i]] = NULL_ADDRESS;
-    //            mappedTokens[originalToken] = ISideToken(NULL_ADDRESS);
-    //        }
-    //        return true;
-    //    }
-}
+    function createSideTokenManually(address[] memory _originalTokens,ISideToken[] memory _sideTokens) 
+        external onlyOwner returns(bool) {
+            require(_originalTokens.length > 0&& 
+                    _originalTokens.length==_sideTokens.length,
+                "Bridge: Invaild argument");
+            for(uint i=0;i<_originalTokens.length;i++){
+                require(_originalTokens[i]!=NULL_ADDRESS && _sideTokens[i] !=NULL_ADDRESS,"Brigde : Original/Sidetoken empty ");
+                require(mappedTokens[_originalTokens[i]]==NULL_ADDRESS,"Bridge :original token already added");
+                mappedTokens[_originalTokens[i]] = _sideTokens[i];
+                originalTokens[_sideTokens[i]] = _originalTokens[i];
+                deployedsideTokenManualy[_sideTokens[i]]=true;
+            }
+            return true;
+    }
+    function createDeployedKnownSideTokenManualy(address[] _originalTokens) external onlyOwner returns(true){
+        require(_originalTokens.length > 0"Bridge: Invaild argument");
+         for(uint i=0;i<_originalTokens.length;i++){
+                require(_originalTokens[i]!=NULL_ADDRESS,"Brigde : Original token empty ");
+                require(deployedKnownSideTokenManualy[_originalTokens[i]]==NULL_ADDRESS,"Bridge :original token already depoyed manually");
+                deployedKnownSideTokenManualy[_originalTokens[i]]=true;
+            }
+    }
+    // function clearSideTokenManually(ISideToken[] memory sideTokens) 
+    //     external onlyOwner returns(bool) {
+    //         require(sideTokens.length > 0,"Bridge: Invaild argument");
+    //         for(uint i=0;i<sideTokens.length;i++){
+    //             address originalToken = address(originalTokens[sideTokens[i]]);
+    //             require(originalToken!=NULL_ADDRESS,"Bridge: Sidetoken not exist");
+    //             originalTokens[sideTokens[i]] = NULL_ADDRESS;
+    //             mappedTokens[originalToken] = ISideToken(NULL_ADDRESS);
+    //         } 
+    //         return true;
+    //     }
+} 

@@ -1,6 +1,5 @@
 {
   "name": "bridge",
-  "private": true,
   "version": "1.1.0",
   "description": "Decentralized Bridge Contracts",
   "scripts": {
@@ -66,5 +65,6 @@
     "decompress": ">=4.2.1",
     "node-fetch": ">=2.6.1",
     "axios": ">=0.18.1"
-  }
+  },
+  "license": "ISC"
 }
