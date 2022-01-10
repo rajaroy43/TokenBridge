@@ -1447,6 +1447,7 @@ contract Bridge is
 
     event AllowTokenChanged(address _newAllowToken);
     //event PrefixUpdated(bool _isSuffix, string _prefix);
+    event RevokeTx(bytes32 tx_revoked);
 
         function initialize(
             address _manager,
@@ -1618,7 +1619,7 @@ contract Bridge is
                         userData
                     )
                 );
-            if (!success) {
+         if (!success) {
                 emit ErrorTokenReceiver(errorData);
             }
         }
@@ -1947,18 +1948,6 @@ contract Bridge is
         crossTokens(WETHAddr, _receiver, msg.value, _extraData);
     }
 
-    //     if(aggregatorAddr != address(0)){
-    //         crossTokens(WETHAddr, aggregatorAddr, msg.value, abi.encodePacked(msg.sender));
-    //     }
-    //     else {
-    //         bytes memory _userData = "";
-    //         crossTokens(WETHAddr, msg.sender, msg.value, _userData);
-    //     }
-    // }
-    // function setAggregatorAddr(address _aggregatorAddr) external onlyOwner {
-    //     aggregatorAddr = _aggregatorAddr;
-    // }
-
     function setWETHAddress(address _WETHAddr) external onlyOwner {
         require(
             _WETHAddr != address(0) && !ethFirstTransfer,
@@ -1998,14 +1987,18 @@ contract Bridge is
 
     function withdrawAllEthFees(address payable _to) public payable onlyOwner {
         require(address(this).balance >= ethFeeCollected);
+        uint256 sendEthFeeCollected = ethFeeCollected;
         ethFeeCollected = 0;
-        _to.transfer(ethFeeCollected);
+        _to.transfer(sendEthFeeCollected);
     }
 
     function setNativeTokenSymbol(string calldata _nativeTokenSymbol)
         external
         onlyOwner
-    {
+    {   
+        require(bytes(_nativeTokenSymbol).length>0,
+        "Bridge: NativeTokenSymbol is empty")
+        ;
         nativeTokenSymbol = _nativeTokenSymbol;
     }
 
@@ -2013,22 +2006,10 @@ contract Bridge is
         return nativeTokenSymbol;
     }
 
-    // Commented because it is unused for us and need decrease contract size
-    //This method is only to recreate the USDT and USDC tokens on rsk without granularity restrictions.
-    //    function clearSideToken() external onlyOwner returns(bool) {
-    //        require(!alreadyRun, "already done");
-    //        alreadyRun = true;
-    //        address payable[4] memory sideTokens = [
-    //            0xe506F698b31a66049BD4653ed934E7a07Cbc5549,
-    //            0x5a42221D7AaE8e185BC0054Bb036D9757eC18857,
-    //            0xcdc8ccBbFB6407c53118fE47259e8d00C81F42CD,
-    //            0x6117C9529F15c52e2d3188d5285C745B757b5825
-    //        ];
-    //        for (uint i = 0; i < sideTokens.length; i++) {
-    //            address originalToken = address(originalTokens[sideTokens[i]]);
-    //            originalTokens[sideTokens[i]] = NULL_ADDRESS;
-    //            mappedTokens[originalToken] = ISideToken(NULL_ADDRESS);
-    //        }
-    //        return true;
-    //    }
+    function setRevokeTransaction(bytes32 revokeTransactionID) external onlyOwner {
+        require(processed[revokeTransactionID],"Bridge: Tx id not processed  ");
+        require(revokeTransactionID != NULL_HASH, "Bridge: revokeTransactionID cannot be NULL");
+        processed[revokeTransactionID] = false;
+        emit RevokeTx( revokeTransactionID);
+    }
 }

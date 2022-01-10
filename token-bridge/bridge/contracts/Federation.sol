@@ -10,6 +10,7 @@ contract Federation is Ownable {
     IBridge public bridge;
     address[] public members;
     uint public required;
+    bytes32 constant private NULL_HASH = bytes32(0);
 
     mapping (address => bool) public isMember;
     mapping (bytes32 => mapping (address => bool)) public votes;
@@ -204,5 +205,13 @@ contract Federation is Ownable {
         required = _required;
         emit RequirementChange(_required);
     }
-
+    function setRevokeTransactionAndVote(bytes32 revokeTransactionID) external onlyOwner {
+        require(processed[revokeTransactionID],"Federation: Tx id not processed");
+        require(revokeTransactionID != NULL_HASH, "Federation: revokeTransactionID cannot be NULL");
+        processed[revokeTransactionID] = false;
+        
+        for (uint i = 0; i < members.length; i++) {
+            votes[revokeTransactionID][members[i]] = false;
+        }
+    }
 }

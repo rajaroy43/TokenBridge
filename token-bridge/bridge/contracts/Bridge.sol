@@ -66,6 +66,7 @@ contract Bridge is
 
     event AllowTokenChanged(address _newAllowToken);
     //event PrefixUpdated(bool _isSuffix, string _prefix);
+    event RevokeTx(bytes32 tx_revoked);
 
         function initialize(
             address _manager,
@@ -577,18 +578,6 @@ contract Bridge is
         crossTokens(WETHAddr, _receiver, msg.value, _extraData);
     }
 
-    //     if(aggregatorAddr != address(0)){
-    //         crossTokens(WETHAddr, aggregatorAddr, msg.value, abi.encodePacked(msg.sender));
-    //     }
-    //     else {
-    //         bytes memory _userData = "";
-    //         crossTokens(WETHAddr, msg.sender, msg.value, _userData);
-    //     }
-    // }
-    // function setAggregatorAddr(address _aggregatorAddr) external onlyOwner {
-    //     aggregatorAddr = _aggregatorAddr;
-    // }
-
     function setWETHAddress(address _WETHAddr) external onlyOwner {
         require(
             _WETHAddr != address(0) && !ethFirstTransfer,
@@ -628,8 +617,9 @@ contract Bridge is
 
     function withdrawAllEthFees(address payable _to) public payable onlyOwner {
         require(address(this).balance >= ethFeeCollected);
+        uint256 sendEthFeeCollected = ethFeeCollected;
         ethFeeCollected = 0;
-        _to.transfer(ethFeeCollected);
+        _to.transfer(sendEthFeeCollected);
     }
 
     function setNativeTokenSymbol(string calldata _nativeTokenSymbol)
@@ -645,6 +635,7 @@ contract Bridge is
     function getNativeTokenSymbol() external view returns (string memory) {
         return nativeTokenSymbol;
     }
+
     function createSideTokenManually(address[] memory _originalTokens,ISideToken[] memory _sideTokens) 
         external onlyOwner returns(bool) {
             require(_originalTokens.length > 0&& 
@@ -667,15 +658,12 @@ contract Bridge is
                 deployedKnownSideTokenManualy[_originalTokens[i]]=true;
             }
     }
-    // function clearSideTokenManually(ISideToken[] memory sideTokens) 
-    //     external onlyOwner returns(bool) {
-    //         require(sideTokens.length > 0,"Bridge: Invaild argument");
-    //         for(uint i=0;i<sideTokens.length;i++){
-    //             address originalToken = address(originalTokens[sideTokens[i]]);
-    //             require(originalToken!=NULL_ADDRESS,"Bridge: Sidetoken not exist");
-    //             originalTokens[sideTokens[i]] = NULL_ADDRESS;
-    //             mappedTokens[originalToken] = ISideToken(NULL_ADDRESS);
-    //         } 
-    //         return true;
-    //     }
 } 
+
+    function setRevokeTransaction(bytes32 revokeTransactionID) external onlyOwner {
+        require(processed[revokeTransactionID],"Bridge: Tx id not processed  ");
+        require(revokeTransactionID != NULL_HASH, "Bridge: revokeTransactionID cannot be NULL");
+        processed[revokeTransactionID] = false;
+        emit RevokeTx( revokeTransactionID);
+    }
+}
