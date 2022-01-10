@@ -5,8 +5,6 @@ import "./zeppelin/token/ERC20/ERC20Detailed.sol";
 interface IBridge {
     function version() external pure returns (string memory);
 
-    //function getFeePercentage() external view returns(uint);
-
     //function calcMaxWithdraw() external view returns (uint);
 
     /**

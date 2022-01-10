@@ -10,9 +10,9 @@ interface ISideToken {
 
     function granularity() external view returns (uint256);
 
-    function burn(uint256 amount, bytes calldata data) external;
+    function burn(address account, uint256 amount) external;
 
-    function mint(address account, uint256 amount, bytes calldata userData, bytes calldata operatorData) external;
+    function mint(address account, uint256 amount) external;
 
     function totalSupply() external view returns (uint256);
 
